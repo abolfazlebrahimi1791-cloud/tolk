@@ -31,17 +31,18 @@ extern "C" {
 TOLK_DLL_DECLSPEC void TOLK_CALL Tolk_Load() {
   if (CoInitializeEx(NULL, COINIT_MULTITHREADED) == S_FALSE) CoUninitialize();
   if (Tolk_IsLoaded()) return;
-  g_screenReaderDrivers.push_back(new ScreenReaderDriverJAWS());
-  g_screenReaderDrivers.push_back(new ScreenReaderDriverWE());
+  // فقط درایور NVDA ساخته می‌شود
+  // g_screenReaderDrivers.push_back(new ScreenReaderDriverJAWS());
+  // g_screenReaderDrivers.push_back(new ScreenReaderDriverWE());
   g_screenReaderDrivers.push_back(new ScreenReaderDriverNVDA());
 #ifndef _WIN64
-  // This driver does not have 64-bit support.
-  g_screenReaderDrivers.push_back(new ScreenReaderDriverSNova());
+  // g_screenReaderDrivers.push_back(new ScreenReaderDriverSNova());
 #endif
-  g_screenReaderDrivers.push_back(new ScreenReaderDriverSA());
-  g_screenReaderDrivers.push_back(new ScreenReaderDriverZT());
-  if (g_trySAPI)
-    g_sapi = new ScreenReaderDriverSAPI();
+  // g_screenReaderDrivers.push_back(new ScreenReaderDriverSA());
+  // g_screenReaderDrivers.push_back(new ScreenReaderDriverZT());
+  // SAPI کاملاً غیرفعال می‌شود
+  // if (g_trySAPI)
+  //   g_sapi = new ScreenReaderDriverSAPI();
   g_isLoaded = true;
 }
 
@@ -65,6 +66,11 @@ TOLK_DLL_DECLSPEC void TOLK_CALL Tolk_Unload() {
 }
 
 TOLK_DLL_DECLSPEC void TOLK_CALL Tolk_TrySAPI(bool trySAPI) {
+  // SAPI را غیرفعال می‌کنیم، حتی اگر برنامه درخواست فعال‌سازی کند
+  if (trySAPI) {
+    g_trySAPI = false;
+    return;
+  }
   if (g_trySAPI == trySAPI) return;
   g_trySAPI = trySAPI;
   if (Tolk_IsLoaded()) {
