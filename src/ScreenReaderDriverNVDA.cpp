@@ -52,9 +52,9 @@ bool ScreenReaderDriverNVDA::Silence() {
 }
 
 bool ScreenReaderDriverNVDA::IsActive() {
-  // This needs an extra check because System Access pretends to be NVDA.
-  if (nvdaController_testIfRunning) return  (!!FindWindow(L"wxWindowClassNR", L"NVDA") && nvdaController_testIfRunning() == 0);
-  return false;
+  // همیشه فعال برگردانده می‌شود، بدون نیاز به چک کردن پنجره NVDA
+  // این کار برای استفاده از nvda2speechd ضروری است
+  return true;
 }
 
 bool ScreenReaderDriverNVDA::Output(const wchar_t *str, bool interrupt) {
