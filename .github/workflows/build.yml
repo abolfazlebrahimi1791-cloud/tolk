@@ -1,0 +1,45 @@
+name: Build Tolk (NVDA Only)
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build on Windows
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+        arch: [x86, x64]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Visual Studio environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: Build Tolk DLL with NMake
+        run: |
+          cd src
+          nmake
+
+      - name: Upload DLL artifact (x86)
+        if: matrix.arch == 'x86'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tolk-x86
+          path: src/Tolk.dll
+
+      - name: Upload DLL artifact (x64)
+        if: matrix.arch == 'x64'
+        uses: actions/upload-artifact@v4
+        with:
+          name: Tolk-x64
+          path: src/Tolk.dll
